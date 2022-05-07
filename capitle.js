@@ -1,33 +1,40 @@
 "use strict";
 
 class CapitleGame {
+
 	constructor(countries) {
 		this.countries = countries;
 
+		// get a list of country names to populate the dropdown
 		this.countryNames = this.countries.map(country => country.CountryName).sort();
-		this.correct = false;
+
+		// initialise the game state
 		this.guesses = [];
+		this.guessNumber = 1;
+		this.correct = false
 
 		const choices = document.getElementById("capital-city-country-choices");
 
-		for (let i = 0; i<this.countryNames.length; i++){
-			const opt = document.createElement("option");
-			opt.value = this.countryNames[i];
-			opt.innerHTML = this.countryNames[i];
-			choices.appendChild(opt);
+		for (let i = 0; i < this.countryNames.length; i++){
+			const option = document.createElement("option");
+			option.value = this.countryNames[i];
+			option.innerHTML = this.countryNames[i];
+			choices.appendChild(option);
 		}
-		this.guessNumber = 1;
 
 		const now = new Date();
 		this.date = now.getFullYear() + "-" + this.zeroPad(now.getMonth() + 1) + "-" + this.zeroPad(now.getDate());
+
 		const today = new Date(now.getFullYear() + "-" + this.zeroPad(now.getMonth() + 1) + "-" + this.zeroPad(now.getDate()) + "T00:00:00+00:00");
-		console.log(today.valueOf().toString(16));
+
 		this.chooseInitialCountry(today.valueOf().toString(16));
-		
+
 		const savedState = localStorage.getItem("capitle-" + this.date);
 
 		if (savedState) {
 			const stateToRestore = JSON.parse(savedState);
+
+			// restore game state
 			this.guesses = stateToRestore.guesses;
 			this.guessNumber = stateToRestore.guessCount;
 			this.correct = stateToRestore.correct;
@@ -46,28 +53,35 @@ class CapitleGame {
 	}
 
 	chooseInitialCountry(seed) {
-		let result = 0;
+		const maximumSeed = "ffffffffffff";
+
+		// turn the current seed into an integer
+		let currentValue = 0;
 		for (let i = 0; i < seed.length; i++) {
-			result = result + seed.charCodeAt(i);
+			currentValue = currentValue + seed.charCodeAt(i);
 		}
-		let upper = 0;
-		for (let i = 0; i < "ffffffffffff".length; i++) {
-			upper = upper + "ffffffffffff".charCodeAt(i);
+
+		// turn the highest possible seed into an integer
+		let maximumValue = 0;
+		for (let i = 0; i < maximumSeed.length; i++) {
+			maximumValue = maximumValue + maximumSeed.charCodeAt(i);
 		}
-		const choice = result / upper;
-		const c = Math.round(choice * this.countries.length);
-		this.country = this.countries[c];
-		console.log(this.country);
+
+		// work out a country number by scaling the seed into the range of countries
+		const countryNumber = Math.round(currentValue / maximumValue * this.countries.length);
+		this.country = this.countries[countryNumber];
+
+		// set the capital city name
 		document.getElementById("capital-city-name").textContent = this.country.CapitalName;
 	}
 
 	guessCountry() {
+		// get the guess from the form
 		const guess = document.getElementById("capital-city-country-choices").value;
-		console.log(guess);
+
 		this.guesses.push(guess);		
 
 		if (this.country.CountryName === guess) {
-			console.log("Correct");
 			this.correct = true;
 		}
 
@@ -101,9 +115,9 @@ class CapitleGame {
 }
 
 const submitForm = (event) => {
-	console.log("here");
 	event.preventDefault();
 	game.guessCountry();
+
 	return false;
 }
 
@@ -111,8 +125,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	fetch("country-capitals.json")
 		.then(response => response.json())
 		.then(json => {
-			
 			const game = new CapitleGame(json);
+			// export game so that submitForm can access it
 			window.game = game;
 		});
 });
