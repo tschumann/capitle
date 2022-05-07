@@ -5,6 +5,18 @@ class CapitleGame {
 	constructor(countries, now) {
 		// filter out countries that don't have a capital city
 		this.countries = countries.filter(country => country.CapitalName !== "N/A");
+		// apply encoding fixes to some of the names
+		this.countries.map(country => {
+			if (country.CapitalName === "Willemstad") {
+				country.CountryName = "Curaçao";
+			}
+			if (country.CountryName === "French Southern and Antarctic Lands") {
+				country.CapitalName = "Port-aux-Français";
+			}
+			if (country.CountryName === "Western Sahara") {
+				country.CapitalName = "El Aaiún";
+			}
+		}).sort();
 
 		// get a list of country names to populate the dropdown
 		this.countryNames = this.countries.map(country => country.CountryName).sort();
