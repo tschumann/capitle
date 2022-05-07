@@ -2,8 +2,9 @@
 
 class CapitleGame {
 
-	constructor(countries) {
-		this.countries = countries;
+	constructor(countries, now) {
+		// filter out countries that don't have a capital city
+		this.countries = countries.filter(country => country.CapitalName !== "N/A");
 
 		// get a list of country names to populate the dropdown
 		this.countryNames = this.countries.map(country => country.CountryName).sort();
@@ -22,7 +23,6 @@ class CapitleGame {
 			choices.appendChild(option);
 		}
 
-		const now = new Date();
 		this.date = now.getFullYear() + "-" + this.zeroPad(now.getMonth() + 1) + "-" + this.zeroPad(now.getDate());
 
 		const today = new Date(now.getFullYear() + "-" + this.zeroPad(now.getMonth() + 1) + "-" + this.zeroPad(now.getDate()) + "T00:00:00+00:00");
@@ -42,14 +42,6 @@ class CapitleGame {
 			this.processGuesses();
 			this.checkGameState();
 		}
-	}
-
-	zeroPad(value) {
-		if (value < 10) {
-			return "0" + value;
-		}
-
-		return value;
 	}
 
 	chooseInitialCountry(seed) {
@@ -93,8 +85,23 @@ class CapitleGame {
 
 	processGuesses() {
 		for (let i = 0; i < this.guesses.length; i++) {
-			document.getElementById("capital-city-guess-" + (i + 1)).textContent = this.guesses[i];
+			const isCorrect = (this.guesses[i] === this.country.CountryName);
+
+			if (isCorrect) {
+				document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + "&#x1F60A;";
+			}
+			else {
+				const actualContry = this.country;
+				const guessedCountry = this.getCountryByName(this.guesses[i]);
+				const distanceBetweenCapitalCities = this.getDistanceFromLatLonInKm(guessedCountry.CapitalLatitude, guessedCountry.CapitalLongitude, actualContry.CapitalLatitude, actualContry.CapitalLongitude);
+
+				document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + distanceBetweenCapitalCities + "km";
+			}
 		}
+	}
+
+	getCountryByName(name) {
+		return this.countries.filter(country => country.CountryName === name)[0];
 	}
 
 	checkGameState() {
@@ -112,6 +119,32 @@ class CapitleGame {
 			}
 		}
 	}
+
+	/**
+	 * @see http://www.movable-type.co.uk/scripts/latlong.html
+	 */
+	getDistanceFromLatLonInKm(latitude1, longitude1, latitude2, longitude2) {
+		const earthRadiusKilometres = 6371;
+		const latitudeDifference = this.degreesToRadians(latitude2 - latitude1);
+		const longitudeDifference = this.degreesToRadians(longitude2 - longitude1);
+		// a is the square of half the chord length between the points
+		const a = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) + Math.cos(this.degreesToRadians(latitude1)) * Math.cos(this.degreesToRadians(latitude2)) *  Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2);
+		const angularDistance = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		return Math.round(earthRadiusKilometres * angularDistance);
+	}
+
+	degreesToRadians(degrees) {
+		return degrees * (Math.PI / 180);
+	}
+
+	zeroPad(value) {
+		if (value < 10) {
+			return "0" + value;
+		}
+
+		// add the string for a consistent return type
+		return "" + value;
+	}
 }
 
 const submitForm = (event) => {
@@ -125,8 +158,69 @@ document.addEventListener("DOMContentLoaded", () => {
 	fetch("country-capitals.json")
 		.then(response => response.json())
 		.then(json => {
-			const game = new CapitleGame(json);
+			const game = new CapitleGame(json, new Date());
 			// export game so that submitForm can access it
 			window.game = game;
+
+			const queryParams = new URLSearchParams(window.document.location.search);
+			const runTests = queryParams.has("test");
+
+			if (runTests && window.document.location.host.startsWith("localhost")) {
+				// clear before the test run
+				localStorage.removeItem("capitle-2022-04-03");
+				localStorage.removeItem("capitle-2022-04-04");
+				localStorage.removeItem("capitle-2022-04-05");
+				localStorage.removeItem("capitle-2022-04-06");
+				localStorage.removeItem("capitle-2022-04-07");
+
+				let testGame = new CapitleGame(json, new Date("2022-04-07T00:00:00"));
+
+				console.log("Testing constructor");
+				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify([]), "testGame.guesses");
+				console.assert(testGame.guessNumber === 1, "testGame.guessNumber");
+				console.assert(testGame.correct === false, "testGame.correct");
+				console.assert(testGame.country.CountryName === "North Korea", "testGame.country.CountryName");
+
+				console.log("Testing guessCountry");
+				document.getElementById("capital-city-country-choices").value = "South Korea";
+				testGame.guessCountry();
+				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea"]), "testGame.guesses");
+				console.assert(testGame.guessNumber === 2, "testGame.guessNumber");
+				console.assert(testGame.correct === false, "testGame.correct");
+				document.getElementById("capital-city-country-choices").value = "China";
+				testGame.guessCountry();
+				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea", "China"]), "testGame.guesses");
+				console.assert(testGame.guessNumber === 3, "testGame.guessNumber");
+				console.assert(testGame.correct === false, "testGame.correct");
+				document.getElementById("capital-city-country-choices").value = "North Korea";
+				testGame.guessCountry();
+				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea", "China", "North Korea"]), "testGame.guesses");
+				console.assert(testGame.guessNumber === 4, "testGame.guessNumber");
+				console.assert(testGame.correct === true, "testGame.correct");
+
+				console.log("Testing getCountryByName");
+				console.assert(testGame.getCountryByName("Australia").CountryName === "Australia", "testGame.getCountryByName(\"Australia\")");
+				console.assert(testGame.getCountryByName("New Zealand").CountryName === "New Zealand", "testGame.getCountryByName(\"Australia\")");
+
+				console.log("Testing degreesToRadians");
+				console.assert(testGame.degreesToRadians(0).toFixed(2) + "" === "0.00", "testGame.degreesToRadians(0)");
+				console.assert(testGame.degreesToRadians(90).toFixed(2) + "" === "1.57", "testGame.degreesToRadians(90)");
+				console.assert(testGame.degreesToRadians(180).toFixed(2) + "" === "3.14", "testGame.degreesToRadians(180)");
+
+				console.log("Testing zeroPad");
+				console.assert(testGame.zeroPad(0) === "00", "testGame.zeroPad(0)");
+				console.assert(testGame.zeroPad(9) === "09", "testGame.zeroPad(9)");
+				console.assert(testGame.zeroPad(10) === "10", "testGame.zeroPad(10)");
+
+				console.log("Testing different countries");
+				testGame = new CapitleGame(json, new Date("2022-04-03T00:00:00"));
+				console.assert(testGame.country.CountryName === "Paraguay", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-04-04T00:00:00"));
+				console.assert(testGame.country.CountryName === "Morocco", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-04-05T00:00:00"));
+				console.assert(testGame.country.CountryName === "Luxembourg", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-04-06T00:00:00"));
+				console.assert(testGame.country.CountryName === "Niger", "testGame.country.CountryName");
+			}
 		});
 });

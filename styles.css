@@ -1,0 +1,18 @@
+
+body {
+	font-family: sans-serif;
+}
+
+.capital-city-guess {
+	background-color: grey;
+	border-radius: 4px;
+}
+
+#title-tail {
+	color: green;
+}
+
+* {
+	box-sizing: border-box;
+	text-align: center;
+}

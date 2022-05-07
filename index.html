@@ -1,9 +1,19 @@
 <html>
 <head>
-	<title>Capitle</title>
-	<script src="capitle.js"></script>
+	<title>Capitle | The capital city guessing game</title>
+	<link rel="icon" href="favicon.png" />
+	<link href="styles.css?q=0705" rel="stylesheet">
+	
+	<link rel="canonical" href="http://captile.tomschumann.com/" />
+	
+	<meta name="description" content="The capital city guessing game." />
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<script src="capitle.js?_=0705"></script>
 </head>
 <body>
+	<h1>CAPIT<span id="title-tail">LE</span></h1>
 	<p>Capital City: <span id="capital-city-name"></span></p>
 	<p>Country: <span id="capital-city-answer">?</span><span id="capital-city-answer-emoji"></span></p>
 
@@ -20,5 +30,11 @@
 		<select id="capital-city-country-choices"></select>
 		<button id="capital-city-guess-button" type="submit">Guess</button>
 	</form>
+
+	<hr/>
+
+	<p>
+		Source code available at <a href="https://github.com/tschumann/capitle" target="_blank">GitHub</a>.
+	</p>
 </body>
 </html>
