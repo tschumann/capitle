@@ -3,7 +3,7 @@
 <head>
 	<title>Capitle | The capital city guessing game</title>
 	<link rel="icon" href="favicon.png" />
-	<link href="styles.css?q=0705" rel="stylesheet">
+	<link href="styles.css?q=0706" rel="stylesheet">
 	
 	<link rel="canonical" href="http://captile.tomschumann.com/" />
 	
@@ -13,7 +13,7 @@
 
 	<meta charset="utf-8"/>
 
-	<script src="capitle.js?_=0705"></script>
+	<script src="capitle.js?_=0706"></script>
 
 	<script async src="https://www.googletagmanager.com/gtag/js?id=G-GJX3P28N9Y"></script>
 	<script>
@@ -26,8 +26,11 @@
 </head>
 <body>
 	<h1>CAPIT<span id="title-tail">LE</span></h1>
-	<p>Capital City: <span id="capital-city-name"></span></p>
-	<p>Country: <span id="capital-city-answer">?</span><span id="capital-city-answer-emoji"></span></p>
+
+	<p>Guess the country from the capital city. Distances are kilometres between capital cities.</p>
+
+	<p class="capital-city-guess-information">Capital City: <span id="capital-city-name"></span></p>
+	<p class="capital-city-guess-information">Country: <span id="capital-city-answer">?</span><span id="capital-city-answer-emoji"></span></p>
 
 	<section id="capital-city-guesses">
 		<p id="capital-city-guess-1" class="capital-city-guess">&nbsp;</p>
@@ -42,6 +45,8 @@
 		<select id="capital-city-country-choices"></select>
 		<button id="capital-city-guess-button" type="submit">Guess</button>
 	</form>
+
+	<p id="capital-city-guess-footer"></p>
 
 	<hr/>
 

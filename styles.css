@@ -1,6 +1,12 @@
 
 body {
 	font-family: sans-serif;
+	font-size: 14px;
+}
+
+.capital-city-guess-information {
+	font-size: 1.2rem;
+	font-weight: bold;
 }
 
 .capital-city-guess {
@@ -10,6 +16,10 @@ body {
 
 #title-tail {
 	color: green;
+}
+
+#capital-city-guess-footer {
+	font-style: italic;
 }
 
 * {

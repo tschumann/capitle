@@ -119,6 +119,7 @@ class CapitleGame {
 		if (this.correct === true || this.guessNumber === 6) {
 			document.getElementById("capital-city-answer").textContent = this.country.CountryName;
 			document.getElementById("capital-city-guess-button").disabled = true;
+			document.getElementById("capital-city-guess-footer").textContent = "For a new round, tune in tomorrow - same Bat-time, same Bat-channel!";
 
 			if (this.correct) {
 				document.getElementById("capital-city-answer-emoji").innerHTML = "&#x1F60A;";
