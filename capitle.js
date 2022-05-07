@@ -57,19 +57,11 @@ class CapitleGame {
 	}
 
 	chooseInitialCountry(seed) {
-		const maximumSeed = "ffffffffffff";
-
 		// turn the current seed into an integer
-		let currentValue = 0;
-		for (let i = 0; i < seed.length; i++) {
-			currentValue = currentValue + seed.charCodeAt(i);
-		}
+		const currentValue = this.hexadecimalStringToInteger(seed);
 
 		// turn the highest possible seed into an integer
-		let maximumValue = 0;
-		for (let i = 0; i < maximumSeed.length; i++) {
-			maximumValue = maximumValue + maximumSeed.charCodeAt(i);
-		}
+		const maximumValue = this.hexadecimalStringToInteger("ffffffffffff");
 
 		// work out a country number by scaling the seed into the range of countries
 		const countryNumber = Math.round(currentValue / maximumValue * this.countries.length);
@@ -154,6 +146,19 @@ class CapitleGame {
 		return degrees * (Math.PI / 180);
 	}
 
+	/**
+	 * Basic hashing function to turn a hexadecimal string into an integer.
+	 */
+	hexadecimalStringToInteger(string) {
+		let value = 0;
+
+		for (let i = 0; i < string.length; i++) {
+			value = value + string.charCodeAt(i);
+		}
+
+		return value;
+	}
+
 	zeroPad(value) {
 		if (value < 10) {
 			return "0" + value;
@@ -204,6 +209,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea"]), "testGame.guesses");
 				console.assert(testGame.guessNumber === 2, "testGame.guessNumber");
 				console.assert(testGame.correct === false, "testGame.correct");
+				document.getElementById("capital-city-country-choices").value = "South Korea";
+				testGame.guessCountry();
+				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea"]), "testGame.guesses");
+				console.assert(testGame.guessNumber === 2, "testGame.guessNumber");
+				console.assert(testGame.correct === false, "testGame.correct");
 				document.getElementById("capital-city-country-choices").value = "China";
 				testGame.guessCountry();
 				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea", "China"]), "testGame.guesses");
@@ -223,6 +233,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				console.assert(testGame.degreesToRadians(0).toFixed(2) + "" === "0.00", "testGame.degreesToRadians(0)");
 				console.assert(testGame.degreesToRadians(90).toFixed(2) + "" === "1.57", "testGame.degreesToRadians(90)");
 				console.assert(testGame.degreesToRadians(180).toFixed(2) + "" === "3.14", "testGame.degreesToRadians(180)");
+
+				console.log("Testing hexadecimalStringToInteger");
+				console.assert(testGame.hexadecimalStringToInteger("deadbeef") === 800, "testGame.hexadecimalStringToInteger(\"deadbeef\")");
+				console.assert(testGame.hexadecimalStringToInteger("ffffffff") === 816, "testGame.hexadecimalStringToInteger(\"deadbeef\")");
+				console.assert(testGame.hexadecimalStringToInteger("12345678") === 420, "testGame.hexadecimalStringToInteger(\"12345678\")");
 
 				console.log("Testing zeroPad");
 				console.assert(testGame.zeroPad(0) === "00", "testGame.zeroPad(0)");
