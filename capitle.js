@@ -71,6 +71,11 @@ class CapitleGame {
 		// get the guess from the form
 		const guess = document.getElementById("capital-city-country-choices").value;
 
+		// don't process a duplicate guess
+		if (this.guesses.includes(guess)) {
+			return;
+		}
+
 		this.guesses.push(guess);		
 
 		if (this.country.CountryName === guess) {
