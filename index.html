@@ -1,0 +1,23 @@
+<html>
+<head>
+	<script src="capitle.js"></script>
+</head>
+<body>
+	<p>Capital City: <span id="capital-city-name"></span></p>
+	<p>Country: <span id="capital-city-answer">?</span><span id="capital-city-answer-emoji"></span></p>
+
+	<section id="capital-city-guesses">
+		<p id="capital-city-guess-1" class="capital-city-guess">&nbsp;</p>
+		<p id="capital-city-guess-2" class="capital-city-guess">&nbsp;</p>
+		<p id="capital-city-guess-3" class="capital-city-guess">&nbsp;</p>
+		<p id="capital-city-guess-4" class="capital-city-guess">&nbsp;</p>
+		<p id="capital-city-guess-5" class="capital-city-guess">&nbsp;</p>
+		<p id="capital-city-guess-6" class="capital-city-guess">&nbsp;</p>
+	</section>
+
+	<form id="capital-city-guess-form" onsubmit="submitForm(event);">
+		<select id="capital-city-country-choices"></select>
+		<button id="capital-city-guess-button" type="submit">Guess</button>
+	</form>
+</body>
+</html>
