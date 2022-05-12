@@ -58,10 +58,10 @@ class CapitleGame {
 
 	chooseInitialCountry(seed) {
 		// turn the current seed into an integer
-		const currentValue = this.hexadecimalStringToInteger(seed);
+		const currentValue = this.stringToHash(seed);
 
 		// turn the highest possible seed into an integer
-		const maximumValue = this.hexadecimalStringToInteger("ffffffffffff");
+		const maximumValue = this.stringToHash("ffffffffffff");
 
 		// work out a country number by scaling the seed into the range of countries
 		const countryNumber = Math.round(currentValue / maximumValue * this.countries.length);
@@ -150,11 +150,11 @@ class CapitleGame {
 	/**
 	 * Basic hashing function to turn a hexadecimal string into an integer.
 	 */
-	hexadecimalStringToInteger(string) {
+	stringToHash(string) {
 		let value = 0;
 
 		for (let i = 0; i < string.length; i++) {
-			value = value + string.charCodeAt(i);
+			value = value + (string.charCodeAt(i) * (i + 1));
 		}
 
 		return value;
@@ -195,6 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
 				localStorage.removeItem("capitle-2022-04-05");
 				localStorage.removeItem("capitle-2022-04-06");
 				localStorage.removeItem("capitle-2022-04-07");
+				localStorage.removeItem("capitle-2022-05-06");
+				localStorage.removeItem("capitle-2022-05-07");
+				localStorage.removeItem("capitle-2022-05-08");
+				localStorage.removeItem("capitle-2022-05-09");
+				localStorage.removeItem("capitle-2022-05-10");
+				localStorage.removeItem("capitle-2022-05-11");
+				localStorage.removeItem("capitle-2022-05-12");
 
 				let testGame = new CapitleGame(json, new Date("2022-04-07T00:00:00"));
 
@@ -202,7 +209,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify([]), "testGame.guesses");
 				console.assert(testGame.guessNumber === 1, "testGame.guessNumber");
 				console.assert(testGame.correct === false, "testGame.correct");
-				console.assert(testGame.country.CountryName === "North Korea", "testGame.country.CountryName");
+				console.assert(testGame.country.CountryName === "Japan", "testGame.country.CountryName");
 
 				console.log("Testing guessCountry");
 				document.getElementById("capital-city-country-choices").value = "South Korea";
@@ -220,9 +227,9 @@ document.addEventListener("DOMContentLoaded", () => {
 				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea", "China"]), "testGame.guesses");
 				console.assert(testGame.guessNumber === 3, "testGame.guessNumber");
 				console.assert(testGame.correct === false, "testGame.correct");
-				document.getElementById("capital-city-country-choices").value = "North Korea";
+				document.getElementById("capital-city-country-choices").value = "Japan";
 				testGame.guessCountry();
-				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea", "China", "North Korea"]), "testGame.guesses");
+				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify(["South Korea", "China", "Japan"]), "testGame.guesses");
 				console.assert(testGame.guessNumber === 4, "testGame.guessNumber");
 				console.assert(testGame.correct === true, "testGame.correct");
 
@@ -235,10 +242,10 @@ document.addEventListener("DOMContentLoaded", () => {
 				console.assert(testGame.degreesToRadians(90).toFixed(2) + "" === "1.57", "testGame.degreesToRadians(90)");
 				console.assert(testGame.degreesToRadians(180).toFixed(2) + "" === "3.14", "testGame.degreesToRadians(180)");
 
-				console.log("Testing hexadecimalStringToInteger");
-				console.assert(testGame.hexadecimalStringToInteger("deadbeef") === 800, "testGame.hexadecimalStringToInteger(\"deadbeef\")");
-				console.assert(testGame.hexadecimalStringToInteger("ffffffff") === 816, "testGame.hexadecimalStringToInteger(\"deadbeef\")");
-				console.assert(testGame.hexadecimalStringToInteger("12345678") === 420, "testGame.hexadecimalStringToInteger(\"12345678\")");
+				console.log("Testing stringToHash");
+				console.assert(testGame.stringToHash("deadbeef") === 3612, "testGame.stringToHash(\"deadbeef\")");
+				console.assert(testGame.stringToHash("ffffffff") === 3672, "testGame.stringToHash(\"deadbeef\")");
+				console.assert(testGame.stringToHash("12345678") === 1932, "testGame.stringToHash(\"12345678\")");
 
 				console.log("Testing zeroPad");
 				console.assert(testGame.zeroPad(0) === "00", "testGame.zeroPad(0)");
@@ -247,13 +254,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
 				console.log("Testing different countries");
 				testGame = new CapitleGame(json, new Date("2022-04-03T00:00:00"));
-				console.assert(testGame.country.CountryName === "Paraguay", "testGame.country.CountryName");
+				console.assert(testGame.country.CountryName === "Nepal", "testGame.country.CountryName");
 				testGame = new CapitleGame(json, new Date("2022-04-04T00:00:00"));
-				console.assert(testGame.country.CountryName === "Morocco", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-04-05T00:00:00"));
 				console.assert(testGame.country.CountryName === "Luxembourg", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-04-05T00:00:00"));
+				console.assert(testGame.country.CountryName === "Jersey", "testGame.country.CountryName");
 				testGame = new CapitleGame(json, new Date("2022-04-06T00:00:00"));
-				console.assert(testGame.country.CountryName === "Niger", "testGame.country.CountryName");
+				console.assert(testGame.country.CountryName === "Marshall Islands", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-06T00:00:00"));
+				console.assert(testGame.country.CountryName === "Kyrgyzstan", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-07T00:00:00"));
+				console.assert(testGame.country.CountryName === "Liechtenstein", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-08T00:00:00"));
+				console.assert(testGame.country.CountryName === "Kazakhstan", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-09T00:00:00"));
+				console.assert(testGame.country.CountryName === "Luxembourg", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-10T00:00:00"));
+				console.assert(testGame.country.CountryName === "Liberia", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-11T00:00:00"));
+				console.assert(testGame.country.CountryName === "Kenya", "testGame.country.CountryName");
+				testGame = new CapitleGame(json, new Date("2022-05-12T00:00:00"));
+				console.assert(testGame.country.CountryName === "Kiribati", "testGame.country.CountryName");
 			}
 		});
 });
