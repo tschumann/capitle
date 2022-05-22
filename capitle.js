@@ -51,8 +51,8 @@ class CapitleGame {
 			this.guessNumber = stateToRestore.guessCount;
 			this.correct = stateToRestore.correct;
 
-			this.processGuesses();
-			this.checkGameState();
+			this.render();
+			this.saveGameState();
 		}
 	}
 
@@ -66,9 +66,6 @@ class CapitleGame {
 		// work out a country number by scaling the seed into the range of countries
 		const countryNumber = Math.round(currentValue / maximumValue * this.countries.length);
 		this.country = this.countries[countryNumber];
-
-		// set the capital city name
-		document.getElementById("capital-city-name").textContent = this.country.CapitalName;
 	}
 
 	guessCountry() {
@@ -86,13 +83,23 @@ class CapitleGame {
 			this.correct = true;
 		}
 
-		this.processGuesses();
-		this.checkGameState();
+		this.render();
+		this.saveGameState();
 		
 		this.guessNumber++;
 	}
 
-	processGuesses() {
+	getCountryByName(name) {
+		return this.countries.filter(country => country.CountryName === name)[0];
+	}
+
+	saveGameState() {
+		localStorage.setItem("capitle-" + this.date, JSON.stringify({"guesses": this.guesses, "guessCount": this.guessNumber, "correct": this.correct}));
+	}
+
+	render() {
+		document.getElementById("capital-city-name").textContent = this.country.CapitalName;
+
 		for (let i = 0; i < this.guesses.length; i++) {
 			const isCorrect = (this.guesses[i] === this.country.CountryName);
 
@@ -107,14 +114,6 @@ class CapitleGame {
 				document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + distanceBetweenCapitalCities + "km";
 			}
 		}
-	}
-
-	getCountryByName(name) {
-		return this.countries.filter(country => country.CountryName === name)[0];
-	}
-
-	checkGameState() {
-		localStorage.setItem("capitle-" + this.date, JSON.stringify({"guesses": this.guesses, "guessCount": this.guessNumber, "correct": this.correct}));
 
 		if (this.correct === true || this.guessNumber === 6) {
 			document.getElementById("capital-city-answer").textContent = this.country.CountryName;
@@ -137,9 +136,11 @@ class CapitleGame {
 		const earthRadiusKilometres = 6371;
 		const latitudeDifference = this.degreesToRadians(latitude2 - latitude1);
 		const longitudeDifference = this.degreesToRadians(longitude2 - longitude1);
+
 		// a is the square of half the chord length between the points
 		const a = Math.sin(latitudeDifference / 2) * Math.sin(latitudeDifference / 2) + Math.cos(this.degreesToRadians(latitude1)) * Math.cos(this.degreesToRadians(latitude2)) *  Math.sin(longitudeDifference / 2) * Math.sin(longitudeDifference / 2);
 		const angularDistance = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
 		return Math.round(earthRadiusKilometres * angularDistance);
 	}
 
