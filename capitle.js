@@ -1,5 +1,7 @@
 "use strict";
 
+const NUMBER_OF_GUESSES = 6;
+
 class CapitleGame {
 
 	constructor(countries, now) {
@@ -116,7 +118,11 @@ class CapitleGame {
 			}
 		}
 
-		if (this.correct === true || this.guessNumber === 6) {
+		for (let i = this.guesses.length; i < NUMBER_OF_GUESSES; i++) {
+			document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = "&nbsp;";
+		}
+
+		if (this.correct === true || this.guessNumber === NUMBER_OF_GUESSES) {
 			document.getElementById("capital-city-answer").textContent = this.country.CountryName;
 			document.getElementById("capital-city-guess-button").disabled = true;
 			document.getElementById("capital-city-guess-footer").textContent = "For a new round, tune in tomorrow - same Bat-time, same Bat-channel!";
