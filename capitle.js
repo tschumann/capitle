@@ -51,9 +51,10 @@ class CapitleGame {
 			this.guessNumber = stateToRestore.guessCount;
 			this.correct = stateToRestore.correct;
 
-			this.render();
 			this.saveGameState();
 		}
+
+		this.render();
 	}
 
 	chooseInitialCountry(seed) {
