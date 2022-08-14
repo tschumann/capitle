@@ -4,7 +4,9 @@ const NUMBER_OF_GUESSES = 6;
 
 class CapitleGame {
 
-	constructor(countries, now) {
+	constructor(countries, now, dom) {
+		// inject the DOM
+		this.dom = dom;
 		// filter out countries that don't have a capital city
 		this.countries = countries.filter(country => country.CapitalName !== "N/A");
 		// apply encoding fixes to some of the names
@@ -28,10 +30,10 @@ class CapitleGame {
 		this.guessNumber = 1;
 		this.correct = false
 
-		const choices = document.getElementById("capital-city-country-choices");
+		const choices = this.dom.getElementById("capital-city-country-choices");
 
 		for (let i = 0; i < this.countryNames.length; i++){
-			const option = document.createElement("option");
+			const option = this.dom.createElement("option");
 			option.value = this.countryNames[i];
 			option.innerHTML = this.countryNames[i];
 			choices.appendChild(option);
@@ -73,7 +75,7 @@ class CapitleGame {
 
 	guessCountry() {
 		// get the guess from the form
-		const guess = document.getElementById("capital-city-country-choices").value;
+		const guess = this.dom.getElementById("capital-city-country-choices").value;
 
 		// don't process a duplicate guess
 		if (this.guesses.includes(guess)) {
@@ -101,37 +103,37 @@ class CapitleGame {
 	}
 
 	render() {
-		document.getElementById("capital-city-name").textContent = this.country.CapitalName;
+		this.dom.getElementById("capital-city-name").textContent = this.country.CapitalName;
 
 		for (let i = 0; i < this.guesses.length; i++) {
 			const isCorrect = (this.guesses[i] === this.country.CountryName);
 
 			if (isCorrect) {
-				document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + "&#x1F60A;";
+				this.dom.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + "&#x1F60A;";
 			}
 			else {
 				const actualContry = this.country;
 				const guessedCountry = this.getCountryByName(this.guesses[i]);
 				const distanceBetweenCapitalCities = this.getDistanceFromLatLonInKm(guessedCountry.CapitalLatitude, guessedCountry.CapitalLongitude, actualContry.CapitalLatitude, actualContry.CapitalLongitude);
 
-				document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + distanceBetweenCapitalCities + "km";
+				this.dom.getElementById("capital-city-guess-" + (i + 1)).innerHTML = this.guesses[i] + " " + distanceBetweenCapitalCities + "km";
 			}
 		}
 
 		for (let i = this.guesses.length; i < NUMBER_OF_GUESSES; i++) {
-			document.getElementById("capital-city-guess-" + (i + 1)).innerHTML = "&nbsp;";
+			this.dom.getElementById("capital-city-guess-" + (i + 1)).innerHTML = "&nbsp;";
 		}
 
 		if (this.correct === true || this.guessNumber === NUMBER_OF_GUESSES) {
-			document.getElementById("capital-city-answer").textContent = this.country.CountryName;
-			document.getElementById("capital-city-guess-button").disabled = true;
-			document.getElementById("capital-city-guess-footer").textContent = "For a new round, tune in tomorrow - same Bat-time, same Bat-channel!";
+			this.dom.getElementById("capital-city-answer").textContent = this.country.CountryName;
+			this.dom.getElementById("capital-city-guess-button").disabled = true;
+			this.dom.getElementById("capital-city-guess-footer").textContent = "For a new round, tune in tomorrow - same Bat-time, same Bat-channel!";
 
 			if (this.correct) {
-				document.getElementById("capital-city-answer-emoji").innerHTML = "&#x1F60A;";
+				this.dom.getElementById("capital-city-answer-emoji").innerHTML = "&#x1F60A;";
 			}
 			else {
-				document.getElementById("capital-city-answer-emoji").innerHTML = "&#x1F622;";
+				this.dom.getElementById("capital-city-answer-emoji").innerHTML = "&#x1F622;";
 			}
 		}
 	}
@@ -189,14 +191,14 @@ document.addEventListener("DOMContentLoaded", () => {
 	fetch("country-capitals.json")
 		.then(response => response.json())
 		.then(json => {
-			const game = new CapitleGame(json, new Date());
+			const game = new CapitleGame(json, new Date(), document);
 			// export game so that submitForm can access it
 			window.game = game;
 
-			const queryParams = new URLSearchParams(window.document.location.search);
+			const queryParams = new URLSearchParams(document.location.search);
 			const runTests = queryParams.has("test");
 
-			if (runTests && window.document.location.host.startsWith("localhost")) {
+			if (runTests && document.location.host.startsWith("localhost")) {
 				// clear before the test run
 				localStorage.removeItem("capitle-2022-04-03");
 				localStorage.removeItem("capitle-2022-04-04");
@@ -211,7 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
 				localStorage.removeItem("capitle-2022-05-11");
 				localStorage.removeItem("capitle-2022-05-12");
 
-				let testGame = new CapitleGame(json, new Date("2022-04-07T00:00:00"));
+				let testGame = new CapitleGame(json, new Date("2022-04-07T00:00:00"), document);
 
 				console.log("Testing constructor");
 				console.assert(JSON.stringify(testGame.guesses) === JSON.stringify([]), "testGame.guesses");
@@ -261,27 +263,27 @@ document.addEventListener("DOMContentLoaded", () => {
 				console.assert(testGame.zeroPad(10) === "10", "testGame.zeroPad(10)");
 
 				console.log("Testing different countries");
-				testGame = new CapitleGame(json, new Date("2022-04-03T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-04-03T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Nepal", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-04-04T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-04-04T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Luxembourg", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-04-05T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-04-05T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Jersey", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-04-06T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-04-06T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Marshall Islands", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-06T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-06T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Kyrgyzstan", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-07T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-07T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Liechtenstein", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-08T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-08T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Kazakhstan", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-09T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-09T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Luxembourg", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-10T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-10T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Liberia", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-11T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-11T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Kenya", "testGame.country.CountryName");
-				testGame = new CapitleGame(json, new Date("2022-05-12T00:00:00"));
+				testGame = new CapitleGame(json, new Date("2022-05-12T00:00:00"), document);
 				console.assert(testGame.country.CountryName === "Kiribati", "testGame.country.CountryName");
 			}
 		});
