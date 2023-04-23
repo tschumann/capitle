@@ -4,7 +4,10 @@ set -eu
 
 cd $(dirname "${BASH_SOURCE[0]}")
 
+sudo apt-get update
 sudo apt-get -y install nginx
+
+sudo mkdir -p /var/www/sites/capitle
 
 # install the Capitle site configuration
 sudo cp capitle.conf /etc/nginx/sites-enabled
